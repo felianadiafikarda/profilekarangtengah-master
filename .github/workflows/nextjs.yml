@@ -63,17 +63,18 @@ jobs:
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
 
-      # ── LANGKAH TAMBAHAN: Generate Prisma Client ──
       - name: Generate Prisma Client
-        run: npx prisma generate
+        # Kita tambahkan --schema agar lokasinya pasti ketemu
+        run: npx prisma generate --schema=./prisma/schema.prisma
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      # ── PERBAIKAN: Masukkan Secret ke proses Build ──
       - name: Build with Next.js
+        # Tambahkan prefix ini untuk memastikan Prisma Client terbaca saat build
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXT_PUBLIC_DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
