@@ -7,11 +7,25 @@ import { MapPin, CheckCircle, Leaf, Target, Heart, Users } from 'lucide-react';
 // ── Ekstrak embed URL dari string yang mungkin berisi <iframe> HTML ──────────
 function getEmbedUrl(raw: string | null | undefined): string {
   if (!raw) return '';
-  // Kalau user simpan kode <iframe src="...">, ambil src-nya
+
+  // 1. Jika inputnya adalah tag <iframe>, ambil src-nya
   const srcMatch = raw.match(/src=["']([^"']+)["']/);
-  if (srcMatch) return srcMatch[1];
-  // Kalau sudah berupa URL embed langsung, kembalikan apa adanya
-  return raw;
+  let url = srcMatch ? srcMatch[1] : raw;
+
+  // 2. Jika ini link YouTube biasa (watch?v=...), ubah ke format /embed/
+  if (url.includes('youtube.com/watch?v=')) {
+    url = url.replace('watch?v=', 'embed/');
+    // Hilangkan parameter 't' (timestamp) jika ada, karena embed tidak mendukungnya via replace ini
+    url = url.split('&')[0];
+  } 
+  
+  // 3. Jika ini link YouTube pendek (youtu.be/...)
+  else if (url.includes('youtu.be/')) {
+    const videoId = url.split('/').pop();
+    url = `https://www.youtube.com/embed/${videoId}`;
+  }
+
+  return url;
 }
 
 // ── Ambil semua misi yang tidak kosong secara dinamis ────────────────────────

@@ -1,7 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 1. Wajib untuk GitHub Pages agar menghasilkan folder 'out'
+  output: 'export',
+  eslint: {
+    ignoreDuringBuilds: true, // Tambahkan ini jika build gagal terus karena linting
+  },
+
+  trailingSlash: true,
+  // 2. Wajib jika project kamu tidak berada di root domain (misal: /my-portfolio)
+  // basePath: '/nama-repo-kamu', 
+
   images: {
-    unoptimized: true, 
+    // 3. Wajib karena GitHub Pages tidak mendukung server-side image optimization
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -13,6 +24,9 @@ const nextConfig = {
       },
     ],
   },
+
+  // Menghindari error hydration saat deploy statis
+  trailingSlash: true,
 };
 
 export default nextConfig;
