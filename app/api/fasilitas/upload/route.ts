@@ -5,11 +5,7 @@ import { existsSync } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
