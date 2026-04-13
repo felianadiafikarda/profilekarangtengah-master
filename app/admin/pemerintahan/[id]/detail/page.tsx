@@ -11,10 +11,17 @@ import LogoutButton from '@/components/LogoutButton';
 import ProfileModal from '@/components/ProfileModal';
 
 export const dynamic = "force-dynamic";
+
 export default async function DetailPemerintahan({ params }: { params: { id: string } }) {
+  // 1. Ambil data pemerintahan
   const pemerintahan = await prisma.pemerintahan.findUnique({
     where: { id: Number(params.id) },
   });
+
+  // 2. Ambil data beranda untuk sinkronisasi Visi & Misi
+  const beranda = await prisma.beranda.findFirst();
+
+  // 3. Ambil data perangkat desa
   const perangkat = await prisma.perangkatDesa.findMany();
 
   if (!pemerintahan) notFound();
@@ -39,12 +46,20 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
       ],
     },
     {
-      title: 'Visi & Misi',
+      title: 'Visi & Misi (Sinkron Beranda)', // Beri keterangan agar admin tahu ini data sinkron
       color: 'bg-violet-50',
       iconColor: 'text-violet-400',
       fields: [
-        { icon: FaBullseye,  label: 'Judul Visi Misi', value: pemerintahan.judulVisiMisi },
-        { icon: FaBullseye,  label: 'Visi',            value: pemerintahan.visi },
+        { 
+          icon: FaBullseye,  
+          label: 'Judul Visi Misi', 
+          value: beranda?.judulVisiMisi // Ambil dari beranda
+        },
+        { 
+          icon: FaBullseye,  
+          label: 'Visi',            
+          value: beranda?.isiVisi?.replace(/<[^>]*>/g, '') // Bersihkan tag HTML agar rapi di halaman detail
+        },
       ],
     },
     {
@@ -59,7 +74,7 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
-      {/* ── Sidebar ── */}
+      {/* Sidebar tetap sama seperti sebelumnya */}
       <aside className="sidebar-bg w-64 flex flex-col shadow-2xl">
         <div className="p-6 border-b border-white border-opacity-10">
           <div className="flex items-center gap-3">
@@ -80,7 +95,6 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
             { icon: FaLandmark, label: 'Pemerintahan', href: '/admin/pemerintahan' },
             { icon: FaSeedling, label: 'Potensi Padukuhan', href: '/admin/potensi' },
             { icon: FaBuilding, label: 'Fasilitas Padukuhan', href: '/admin/fasilitas' },
-            
           ].map(({ icon: Icon, label, href }) => (
             <Link key={label} href={href} className={`sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-indigo-200 hover:text-white ${label === 'Pemerintahan' ? 'active text-white' : ''}`}>
               <Icon className="text-base flex-shrink-0" />
@@ -90,12 +104,12 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
         </nav>
 
         <div className="p-4 border-t border-white border-opacity-10">
-        <ProfileModal />
-        <LogoutButton />
+          <ProfileModal />
+          <LogoutButton />
         </div>
       </aside>
 
-      {/* ── Main ── */}
+      {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="glass-header z-20 px-8 py-4 flex justify-between items-center flex-shrink-0">
           <div>
@@ -115,10 +129,8 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
           </div>
 
           <div className="grid grid-cols-3 gap-5">
-            {/* ── Kolom Kiri ── */}
+            {/* Kolom Kiri */}
             <div className="col-span-1 flex flex-col gap-4">
-
-              {/* Summary Card */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="px-5 py-3 border-b border-gray-100">
                   <span className="font-bold text-gray-700 text-sm">Ringkasan</span>
@@ -170,7 +182,7 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
               </div>
             </div>
 
-            {/* ── Kolom Kanan ── */}
+            {/* Kolom Kanan */}
             <div className="col-span-2 flex flex-col gap-4">
               {sections.map((section) => (
                 <div key={section.title} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
