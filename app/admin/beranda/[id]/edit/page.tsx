@@ -21,7 +21,7 @@ export default async function EditBeranda({ params }: { params: { id: string } }
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
       {/* ── Sidebar ─────────────────────────────────── */}
-      <aside className="sidebar-bg w-64 flex flex-col shadow-2xl flex-shrink-0">
+      <aside className="sidebar-bg w-64 flex flex-col shadow-2xl">
         <div className="p-6 border-b border-white border-opacity-10">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-white bg-opacity-20 flex items-center justify-center shadow">
@@ -33,6 +33,7 @@ export default async function EditBeranda({ params }: { params: { id: string } }
             </div>
           </div>
         </div>
+
         <nav className="flex-1 p-4 space-y-1">
           <div className="text-indigo-400 text-xs font-semibold uppercase tracking-widest px-3 mb-3">Menu Utama</div>
           {[
@@ -51,6 +52,7 @@ export default async function EditBeranda({ params }: { params: { id: string } }
             </Link>
           ))}
         </nav>
+
         <div className="p-4 border-t border-white border-opacity-10">
         <ProfileModal />
         <LogoutButton />

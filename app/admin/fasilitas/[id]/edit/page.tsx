@@ -2,7 +2,7 @@
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { FaArrowLeft, FaLayerGroup, FaHome, FaUsers, FaCog } from "react-icons/fa";
+import { FaArrowLeft, FaLayerGroup, FaHome, FaLandmark, FaSeedling, FaBuilding, } from "react-icons/fa";
 import EditForm from "./EditForm";
 import LogoutButton from '@/components/LogoutButton';
 import ProfileModal from '@/components/ProfileModal';
@@ -20,36 +20,39 @@ export default async function EditFasilitas({ params }: { params: { id: string }
 
       {/* Sidebar */}
       <aside className="sidebar-bg w-64 flex flex-col shadow-2xl">
-        <div className="p-6 border-b border-white border-opacity-10">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-white bg-opacity-20 flex items-center justify-center shadow">
-              <FaLayerGroup className="text-white text-sm" />
-            </div>
-            <div>
-              <div className="text-white font-bold text-base tracking-wide leading-tight">AdminPanel</div>
-              <div className="text-indigo-300 text-xs font-medium">v2.0</div>
-            </div>
-          </div>
-        </div>
-        <nav className="flex-1 p-4 space-y-1">
-          <div className="text-indigo-400 text-xs font-semibold uppercase tracking-widest px-3 mb-3">Menu Utama</div>
-          {[
-            { icon: FaHome,       label: "Dashboard", href: "/admin" },
-            { icon: FaLayerGroup, label: "Fasilitas", href: "/admin/fasilitas" },
-            { icon: FaUsers,      label: "Users",     href: "/admin/users" },
-            { icon: FaCog,        label: "Settings",  href: "/admin/settings" },
-          ].map(({ icon: Icon, label, href }) => (
-            <Link key={label} href={href} className={`sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-indigo-200 hover:text-white ${label === "Fasilitas" ? "active text-white" : ""}`}>
-              <Icon className="text-base flex-shrink-0" />
-              <span>{label}</span>
-            </Link>
-          ))}
-        </nav>
-        <div className="p-4 border-t border-white border-opacity-10">
-        <ProfileModal />
-        <LogoutButton />
-        </div>
-      </aside>
+              <div className="p-6 border-b border-white border-opacity-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-white bg-opacity-20 flex items-center justify-center shadow">
+                    <FaLayerGroup className="text-white text-sm" />
+                  </div>
+                  <div>
+                    <div className="text-white font-bold text-base tracking-wide leading-tight">AdminPanel</div>
+                    <div className="text-indigo-300 text-xs font-medium">v2.0</div>
+                  </div>
+                </div>
+              </div>
+      
+              <nav className="flex-1 p-4 space-y-1">
+                <div className="text-indigo-400 text-xs font-semibold uppercase tracking-widest px-3 mb-3">Menu Utama</div>
+                {[
+                  { icon: FaHome, label: 'Dashboard', href: '/admin/beranda' },
+                  { icon: FaLandmark, label: 'Pemerintahan', href: '/admin/pemerintahan' },
+                  { icon: FaSeedling, label: 'Potensi Padukuhan', href: '/admin/potensi' },
+                  { icon: FaBuilding, label: 'Fasilitas Padukuhan', href: '/admin/fasilitas' },
+                  
+                ].map(({ icon: Icon, label, href }) => (
+                  <Link key={label} href={href} className={`sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-indigo-200 hover:text-white ${label === 'Fasilitas Padukuhan' ? 'active text-white' : ''}`}>
+                    <Icon className="text-base flex-shrink-0" />
+                    <span>{label}</span>
+                  </Link>
+                ))}
+              </nav>
+      
+              <div className="p-4 border-t border-white border-opacity-10">
+              <ProfileModal />
+              <LogoutButton />
+              </div>
+            </aside>
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">

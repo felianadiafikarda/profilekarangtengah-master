@@ -60,7 +60,7 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* ── Sidebar ── */}
-      <aside className="sidebar-bg w-64 flex flex-col shadow-2xl flex-shrink-0">
+      <aside className="sidebar-bg w-64 flex flex-col shadow-2xl">
         <div className="p-6 border-b border-white border-opacity-10">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-white bg-opacity-20 flex items-center justify-center shadow">
@@ -72,20 +72,23 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
             </div>
           </div>
         </div>
+
         <nav className="flex-1 p-4 space-y-1">
           <div className="text-indigo-400 text-xs font-semibold uppercase tracking-widest px-3 mb-3">Menu Utama</div>
           {[
-            { icon: FaHome,     label: 'Dashboard',           href: '/admin' },
-            { icon: FaLandmark, label: 'Pemerintahan',        href: '/admin/pemerintahan' },
-            { icon: FaSeedling, label: 'Potensi Padukuhan',   href: '/admin/potensi' },
+            { icon: FaHome, label: 'Dashboard', href: '/admin/beranda' },
+            { icon: FaLandmark, label: 'Pemerintahan', href: '/admin/pemerintahan' },
+            { icon: FaSeedling, label: 'Potensi Padukuhan', href: '/admin/potensi' },
             { icon: FaBuilding, label: 'Fasilitas Padukuhan', href: '/admin/fasilitas' },
+            
           ].map(({ icon: Icon, label, href }) => (
-            <Link key={label} href={href} className={`sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-indigo-200 hover:text-white ${label === 'Pemerintahan' ? 'active text-white' : ''}`}>
+            <Link key={label} href={href} className={`sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-indigo-200 hover:text-white ${label === 'Fasilitas Padukuhan' ? 'active text-white' : ''}`}>
               <Icon className="text-base flex-shrink-0" />
               <span>{label}</span>
             </Link>
           ))}
         </nav>
+
         <div className="p-4 border-t border-white border-opacity-10">
         <ProfileModal />
         <LogoutButton />
