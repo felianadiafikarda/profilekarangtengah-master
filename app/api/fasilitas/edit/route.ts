@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
       // Langsung upload ke Vercel Blob
       const blob = await put(file.name, file, {
         access: "public",
+        addRandomSuffix: true,
       });
 
       // Ambil URL permanen dari Vercel Blob (https://...)

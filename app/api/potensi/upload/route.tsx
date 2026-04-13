@@ -8,6 +8,7 @@ async function saveFile(file: File) {
   // Langsung upload ke cloud, Vercel otomatis menangani penamaan unik
   const blob = await put(file.name, file, {
     access: "public",
+    addRandomSuffix: true,
   });
 
   return blob.url; // Mengembalikan link https://...

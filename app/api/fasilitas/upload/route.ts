@@ -16,12 +16,10 @@ export async function POST(req: NextRequest) {
     if (!file.type.startsWith("image/")) {
       return NextResponse.json({ error: "File harus berupa gambar" }, { status: 400 });
     }
-
-    // 1. Upload ke Vercel Blob
-    // Kita tidak perlu lagi membuat Buffer manual atau menentukan fileName dengan randomUUID
-    // Vercel Blob akan memberikan nama unik secara otomatis agar tidak duplikat
+    
     const blob = await put(file.name, file, {
       access: "public",
+      addRandomSuffix: true,
     });
 
     // 2. Kembalikan URL publik dari Vercel Blob

@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
     // Nama file unik akan diatur otomatis oleh Vercel
     const blob = await put(file.name, file, {
       access: "public",
+      addRandomSuffix: true,
     });
 
     // 2. Gunakan URL dari blob untuk disimpan ke database

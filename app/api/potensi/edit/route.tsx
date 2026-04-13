@@ -24,6 +24,7 @@ export async function POST(req: Request) {
       // Kita tidak perlu buat buffer manual atau mkdirSync lagi
       const blob = await put(file.name, file, {
         access: "public",
+        addRandomSuffix: true,
       });
 
       // 2. Gunakan URL hasil upload dari Blob

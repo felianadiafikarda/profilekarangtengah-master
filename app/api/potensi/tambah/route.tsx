@@ -22,6 +22,7 @@ export async function POST(req: Request) {
       // Langsung upload tanpa perlu mkdir atau buffer manual
       const blob = await put(file.name, file, {
         access: "public",
+        addRandomSuffix: true,
       });
 
       // Ambil link URL dari Vercel Blob
