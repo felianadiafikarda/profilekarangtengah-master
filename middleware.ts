@@ -7,7 +7,6 @@ export default withAuth(
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
 
-    // Jika sudah login tapi masih buka halaman login, lempar ke beranda admin
     if (pathname === '/login' && token) {
       return NextResponse.redirect(new URL('/admin/beranda', req.url));
     }
@@ -17,7 +16,6 @@ export default withAuth(
     callbacks: {
       authorized({ token, req }) {
         const { pathname } = req.nextUrl;
-        // Hanya proteksi folder admin
         if (pathname.startsWith('/admin')) {
           return !!token;
         }
@@ -31,11 +29,12 @@ export default withAuth(
 );
 
 export const config = {
-  // Pastikan matcher tidak mengganggu aset statis dan folder user
+  /*
+   * Menggunakan satu baris regex yang mengecualikan:
+   * api, _next/static, _next/image, folder user, 
+   * dan semua file dengan ekstensi gambar/icon.
+   */
   matcher: [
-    '/admin/:path*', 
-    '/login',
-    // Hindari menjalankan middleware pada file internal
-    '/((?!api|_next/static|_next/image|user|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'
+    '/((?!api|_next/static|_next/image|user|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
