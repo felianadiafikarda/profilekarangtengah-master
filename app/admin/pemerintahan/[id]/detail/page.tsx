@@ -26,14 +26,30 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
 
   if (!pemerintahan) notFound();
 
-  // Helper untuk membersihkan HTML dan format Misi
-  const cleanHtml = (html: string | null | undefined) => html ? html.replace(/<[^>]*>/g, '') : null;
-  
+  // --- HELPER FUNCTIONS ---
+
+  // Fungsi untuk memberi nomor 1, 2, 3 pada isi Visi
+  const formatVisiBerangka = (html: string | null | undefined) => {
+    if (!html) return null;
+    const lines = html
+      .replace(/<\/p>|<\/div>|<br\s*\/?>/g, '\n') // Handle baris baru dari tag HTML
+      .replace(/<[^>]*>/g, '')                   // Hapus semua tag HTML
+      .split('\n')                               // Pecah jadi array per baris
+      .map(line => line.trim())                  // Bersihkan spasi di ujung
+      .filter(line => line.length > 0);           // Buat baris kosong
+
+    return lines.map((line, index) => `${index + 1}. ${line}`).join('\n');
+  };
+
+  // Fungsi untuk memproses misiList (JSON String) menjadi teks baris baru
   const parseMisi = (misiJson: string | null | undefined) => {
     try {
       if (!misiJson) return null;
       const arr = JSON.parse(misiJson);
-      return Array.isArray(arr) ? arr.join('\n') : null;
+      if (Array.isArray(arr)) {
+        return arr.map((m, i) => `${i + 1}. ${m}`).join('\n');
+      }
+      return null;
     } catch {
       return null;
     }
@@ -71,13 +87,11 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
         { 
           icon: FaBullseye,  
           label: 'Visi',            
-          // Kita ambil dari isiVisi sesuai dengan yang ada di EditForm
-          value: cleanHtml(beranda?.isiVisi) 
+          value: formatVisiBerangka(beranda?.isiVisi) 
         },
         { 
           icon: FaBullseye,  
           label: 'Daftar Misi', 
-          // Mengambil misiList dan mengubahnya dari JSON menjadi teks baris baru
           value: parseMisi(beranda?.misiList)
         },
       ],
@@ -94,6 +108,7 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {/* Sidebar */}
       <aside className="sidebar-bg w-64 flex flex-col shadow-2xl">
         <div className="p-6 border-b border-white border-opacity-10">
           <div className="flex items-center gap-3">
@@ -115,7 +130,11 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
             { icon: FaSeedling, label: 'Potensi Padukuhan', href: '/admin/potensi' },
             { icon: FaBuilding, label: 'Fasilitas Padukuhan', href: '/admin/fasilitas' },
           ].map(({ icon: Icon, label, href }) => (
-            <Link key={label} href={href} className={`sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-indigo-200 hover:text-white ${label === 'Pemerintahan' ? 'active text-white' : ''}`}>
+            <Link 
+              key={label} 
+              href={href} 
+              className={`sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-indigo-200 hover:text-white ${label === 'Pemerintahan' ? 'active text-white' : ''}`}
+            >
               <Icon className="text-base flex-shrink-0" />
               <span>{label}</span>
             </Link>
@@ -128,6 +147,7 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
         </div>
       </aside>
 
+      {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="glass-header z-20 px-8 py-4 flex justify-between items-center flex-shrink-0">
           <div>
@@ -140,6 +160,7 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
         </header>
 
         <main className="flex-1 overflow-y-auto p-6">
+          {/* Breadcrumbs */}
           <div className="flex items-center gap-2 text-xs text-gray-400 font-medium mb-4">
             <Link href="/admin/pemerintahan" className="hover:text-indigo-500 transition-colors">Pemerintahan</Link>
             <span>/</span>
@@ -147,6 +168,7 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
           </div>
 
           <div className="grid grid-cols-3 gap-5">
+            {/* Kolom Kiri */}
             <div className="col-span-1 flex flex-col gap-4">
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="px-5 py-3 border-b border-gray-100">
@@ -163,28 +185,7 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-                  <span className="font-bold text-gray-700 text-sm">Perangkat Desa</span>
-                  <span className="text-xs bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded-full">{perangkat.length}</span>
-                </div>
-                <div className="p-4 flex flex-col gap-2 max-h-64 overflow-y-auto">
-                  {perangkat.length > 0 ? perangkat.map((p) => (
-                    <div key={p.id} className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                        <FaUsers className="text-indigo-500 text-xs" />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-xs font-bold text-gray-700 truncate">{p.nama}</div>
-                        <div className="text-xs text-gray-400 truncate">{p.jabatan}</div>
-                      </div>
-                    </div>
-                  )) : (
-                    <p className="text-xs text-gray-300 italic text-center py-2">Belum ada perangkat</p>
-                  )}
-                </div>
-              </div>
-
+              {/* Aksi */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-2">
                 <span className="font-bold text-gray-700 text-sm mb-1">Aksi</span>
                 <Link
@@ -197,6 +198,7 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
               </div>
             </div>
 
+            {/* Kolom Kanan */}
             <div className="col-span-2 flex flex-col gap-4">
               {sections.map((section) => (
                 <div key={section.title} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
