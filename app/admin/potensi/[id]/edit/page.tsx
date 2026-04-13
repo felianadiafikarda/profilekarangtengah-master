@@ -41,7 +41,7 @@ export default async function EditPotensi({ params }: { params: { id: string } }
                   { icon: FaBuilding, label: 'Fasilitas Padukuhan', href: '/admin/fasilitas' },
                   
                 ].map(({ icon: Icon, label, href }) => (
-                  <Link key={label} href={href} className={`sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-indigo-200 hover:text-white ${label === 'Fasilitas Padukuhan' ? 'active text-white' : ''}`}>
+                  <Link key={label} href={href} className={`sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-indigo-200 hover:text-white ${label === 'Potensi Padukuhan' ? 'active text-white' : ''}`}>
                     <Icon className="text-base flex-shrink-0" />
                     <span>{label}</span>
                   </Link>
