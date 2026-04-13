@@ -11,10 +11,10 @@ export default function HeroSection() {
 
   // Background images - ganti dengan URL gambar desa Anda
   const backgroundImages = [
-    "masjid-mujahidin.jpg", // Sawah
-    "mushola-an-nur.jpg", // Pegunungan
-    "smp-muhammadiyah.jpg", // Hutan
-    "balai-padukuhan.jpg", // Sunset Alam
+    "/masjid-mujahidin.jpg", // Sawah
+    "/mushola-an-nur.jpg", // Pegunungan
+    "/smp-muhammadiyah.jpg", // Hutan
+    "/balai-padukuhan.jpg", // Sunset Alam
   ];
 
   // Text yang akan di-typing
