@@ -22,7 +22,16 @@ const nextConfig = {
     ],
   },
 
-  trailingSlash: true,
+  async redirects() {
+    return [
+      {
+        source: '/',           // Jika orang buka link utama
+        destination: '/user',  // Lempar ke halaman user
+        permanent: true,       // Buat permanen agar bagus untuk SEO
+      },
+    ];
+  },
+  trailingSlash: false,
 };
 
 export default nextConfig;

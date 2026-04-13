@@ -1,11 +1,14 @@
-// middleware.ts (letakkan di root project, sejajar dengan app/)
+// middleware.ts
 import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 
 export default withAuth(
   function middleware(req) {
-    // Kalau sudah login dan akses /login → redirect ke /admin/beranda
-    if (req.nextUrl.pathname === '/login' && req.nextauth.token) {
+    const { pathname } = req.nextUrl;
+    const token = req.nextauth.token;
+
+    // Jika sudah login tapi masih buka halaman login, lempar ke beranda admin
+    if (pathname === '/login' && token) {
       return NextResponse.redirect(new URL('/admin/beranda', req.url));
     }
     return NextResponse.next();
@@ -14,7 +17,7 @@ export default withAuth(
     callbacks: {
       authorized({ token, req }) {
         const { pathname } = req.nextUrl;
-        // Halaman /admin/* wajib login
+        // Hanya proteksi folder admin
         if (pathname.startsWith('/admin')) {
           return !!token;
         }
@@ -28,5 +31,11 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ['/admin/:path*', '/login'],
+  // Pastikan matcher tidak mengganggu aset statis dan folder user
+  matcher: [
+    '/admin/:path*', 
+    '/login',
+    // Hindari menjalankan middleware pada file internal
+    '/((?!api|_next/static|_next/image|favicon.ico|user).*)'
+  ],
 };
