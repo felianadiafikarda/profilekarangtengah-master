@@ -26,6 +26,19 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
 
   if (!pemerintahan) notFound();
 
+  // Helper untuk membersihkan HTML dan format Misi
+  const cleanHtml = (html: string | null | undefined) => html ? html.replace(/<[^>]*>/g, '') : null;
+  
+  const parseMisi = (misiJson: string | null | undefined) => {
+    try {
+      if (!misiJson) return null;
+      const arr = JSON.parse(misiJson);
+      return Array.isArray(arr) ? arr.join('\n') : null;
+    } catch {
+      return null;
+    }
+  };
+
   const sections = [
     {
       title: 'Informasi Umum',
@@ -46,19 +59,26 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
       ],
     },
     {
-      title: 'Visi & Misi (Sinkron Beranda)', // Beri keterangan agar admin tahu ini data sinkron
+      title: 'Visi & Misi (Sinkron Beranda)', 
       color: 'bg-violet-50',
       iconColor: 'text-violet-400',
       fields: [
         { 
           icon: FaBullseye,  
-          label: 'Judul Visi Misi', 
-          value: beranda?.judulVisiMisi // Ambil dari beranda
+          label: 'Judul Visi', 
+          value: beranda?.judulVisi || beranda?.judulVisiMisi 
         },
         { 
           icon: FaBullseye,  
           label: 'Visi',            
-          value: beranda?.isiVisi?.replace(/<[^>]*>/g, '') // Bersihkan tag HTML agar rapi di halaman detail
+          // Kita ambil dari isiVisi sesuai dengan yang ada di EditForm
+          value: cleanHtml(beranda?.isiVisi) 
+        },
+        { 
+          icon: FaBullseye,  
+          label: 'Daftar Misi', 
+          // Mengambil misiList dan mengubahnya dari JSON menjadi teks baris baru
+          value: parseMisi(beranda?.misiList)
         },
       ],
     },
@@ -74,7 +94,6 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
-      {/* Sidebar tetap sama seperti sebelumnya */}
       <aside className="sidebar-bg w-64 flex flex-col shadow-2xl">
         <div className="p-6 border-b border-white border-opacity-10">
           <div className="flex items-center gap-3">
@@ -109,7 +128,6 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
         </div>
       </aside>
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="glass-header z-20 px-8 py-4 flex justify-between items-center flex-shrink-0">
           <div>
@@ -129,7 +147,6 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
           </div>
 
           <div className="grid grid-cols-3 gap-5">
-            {/* Kolom Kiri */}
             <div className="col-span-1 flex flex-col gap-4">
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="px-5 py-3 border-b border-gray-100">
@@ -146,7 +163,6 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
                 </div>
               </div>
 
-              {/* Perangkat Desa Summary */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
                   <span className="font-bold text-gray-700 text-sm">Perangkat Desa</span>
@@ -169,7 +185,6 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
                 </div>
               </div>
 
-              {/* Aksi */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-2">
                 <span className="font-bold text-gray-700 text-sm mb-1">Aksi</span>
                 <Link
@@ -182,7 +197,6 @@ export default async function DetailPemerintahan({ params }: { params: { id: str
               </div>
             </div>
 
-            {/* Kolom Kanan */}
             <div className="col-span-2 flex flex-col gap-4">
               {sections.map((section) => (
                 <div key={section.title} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
