@@ -1,14 +1,29 @@
-//app/user/pemerintahan/page/tsx
+// app/user/pemerintahan/page.tsx
 import prisma from "@/lib/prisma";
 import { Users, Target, History } from "lucide-react";
-export const revalidate = 0;
-export default async function Pemerintahan() {
 
+export const revalidate = 0;
+
+export default async function Pemerintahan() {
+  // 1. Ambil data pemerintahan
   const pemerintahan = await prisma.pemerintahan.findFirst();
 
+  // 2. Ambil data beranda untuk mendapatkan Visi & Misi terbaru
+  const beranda = await prisma.beranda.findFirst();
+
+  // 3. Ambil data perangkat desa
   const perangkat = await prisma.perangkatDesa.findMany({
     orderBy: { id: 'asc' },
   });
+
+  // Parsing data Misi dari JSON string di tabel beranda
+  const listMisi = (() => {
+    try {
+      return JSON.parse(beranda?.misiList || "[]");
+    } catch {
+      return [];
+    }
+  })();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -40,30 +55,37 @@ export default async function Pemerintahan() {
           </p>
         </div>
 
-        {/* Visi Misi */}
+        {/* Visi Misi - Sekarang mengambil dari data 'beranda' */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="flex items-center mb-4">
             <Target className="text-green-700 mr-3" size={28} />
             <h3 className="text-xl font-semibold text-green-700">
-              {pemerintahan?.judulVisiMisi}
+              {beranda?.judulVisiMisi || "Visi & Misi"}
             </h3>
           </div>
 
           <div className="mb-4">
             <p className="font-semibold text-gray-800 mb-1">Visi:</p>
-            <p className="text-gray-700 text-sm">
-              {pemerintahan?.visi}
-            </p>
+            {/* Menggunakan dangerouslySetInnerHTML karena biasanya Visi di Beranda pakai Rich Text Editor */}
+            <div 
+              className="text-gray-700 text-sm"
+              dangerouslySetInnerHTML={{ __html: beranda?.isiVisi || "" }} 
+            />
           </div>
 
           <div>
             <p className="font-semibold text-gray-800 mb-2">Misi:</p>
-            <ul className="text-gray-700 text-sm space-y-1">
-              <li>• Pemerintah yang bersih transparan bertanggungjawab</li>
-              <li>• Mewujudkan kehidupan yang demokratis dengan musyawarah mufakat</li>
-              <li>• Terpenuhinya akses layanan dasar pendidikan dan kesehatan</li>
-              <li>• Pengembangan ekonomi kerakyatan</li>
-              <li>• Optimalisasi peran BUMDesa</li>
+            <ul className="text-gray-700 text-sm space-y-2">
+              {listMisi.length > 0 ? (
+                listMisi.map((misi: string, index: number) => (
+                  <li key={index} className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>{misi}</span>
+                  </li>
+                ))
+              ) : (
+                <li className="italic text-gray-400">Belum ada data misi.</li>
+              )}
             </ul>
           </div>
         </div>
@@ -72,7 +94,6 @@ export default async function Pemerintahan() {
 
       {/* Struktur Organisasi */}
       <div className="mb-12">
-
         <h3 className="text-2xl font-semibold mb-6 text-green-700">
           Struktur Organisasi Pemerintahan
         </h3>
@@ -84,7 +105,6 @@ export default async function Pemerintahan() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-
           {perangkat.map((person) => (
             <div
               key={person.id}
@@ -101,13 +121,10 @@ export default async function Pemerintahan() {
               <p className="text-center text-gray-600 text-sm font-medium">
                 {person.jabatan}
               </p>
-
             </div>
           ))}
-
         </div>
       </div>
-
     </div>
   );
 }

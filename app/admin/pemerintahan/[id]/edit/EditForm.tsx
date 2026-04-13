@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FaTimes } from 'react-icons/fa';
+import { FaTimes, FaInfoCircle } from 'react-icons/fa';
 
 type Pemerintahan = {
   id: number;
@@ -55,8 +55,6 @@ export default function EditForm({ pemerintahan }: { pemerintahan: Pemerintahan 
       deskripsi:         getValue('deskripsi'),
       judulDeskripsi:    getValue('judulDeskripsi'),
       isiDeskripsi:      getValue('isiDeskripsi'),
-      judulVisiMisi:     getValue('judulVisiMisi'),
-      visi:              getValue('visi'),
       deskripsiStruktur: getValue('deskripsiStruktur'),
     };
 
@@ -122,18 +120,16 @@ export default function EditForm({ pemerintahan }: { pemerintahan: Pemerintahan 
       </SectionCard>
 
       {/* ── Visi & Misi ── */}
-      <SectionCard title="Visi & Misi" badge="bg-violet-100 text-violet-700">
-        <div className="flex flex-col gap-4">
-          <div className="form-group flex flex-col gap-1">
-            <label className="form-label">Judul Visi Misi</label>
-            <input name="judulVisiMisi" defaultValue={pemerintahan.judulVisiMisi ?? ''} className={inputCls} placeholder="Contoh: Visi & Misi" />
-          </div>
-          <div className="form-group flex flex-col gap-1">
-            <label className="form-label">Visi</label>
-            <textarea name="visi" defaultValue={pemerintahan.visi ?? ''} rows={3} className={textareaCls} placeholder="Isi visi..." />
+        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-5 flex items-start gap-3">
+          <FaInfoCircle className="text-blue-500 mt-1" />
+          <div>
+            <p className="text-sm font-bold text-blue-800">Informasi Visi & Misi</p>
+            <p className="text-xs text-blue-600">
+              Data Visi & Misi saat ini disinkronkan otomatis dengan halaman 
+              <strong> Profil Padukuhan (Beranda)</strong>. Silakan edit di sana untuk melakukan perubahan.
+            </p>
           </div>
         </div>
-      </SectionCard>
 
       {/* ── Struktur Organisasi ── */}
       <SectionCard title="Struktur Organisasi" badge="bg-blue-100 text-blue-700">

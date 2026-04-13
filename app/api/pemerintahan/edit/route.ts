@@ -16,8 +16,6 @@ export async function POST(req: NextRequest) {
         deskripsi:         data.deskripsi         || null,
         judulDeskripsi:    data.judulDeskripsi     || null,
         isiDeskripsi:      data.isiDeskripsi       || null,
-        judulVisiMisi:     data.judulVisiMisi      || null,
-        visi:              data.visi               || null,
         deskripsiStruktur: data.deskripsiStruktur  || null,
       },
     });
