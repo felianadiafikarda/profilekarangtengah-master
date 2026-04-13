@@ -6,6 +6,7 @@ import EditForm from "./EditForm";
 import LogoutButton from '@/components/LogoutButton';
 import ProfileModal from '@/components/ProfileModal';
 
+export const dynamic = "force-dynamic";
 export default async function EditPotensi({ params }: { params: { id: string } }) {
 
   const potensi = await prisma.potensi.findUnique({

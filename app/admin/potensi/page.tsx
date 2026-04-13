@@ -7,6 +7,7 @@ import HapusButton from './HapusButton';
 import LogoutButton from '@/components/LogoutButton';
 import ProfileModal from '@/components/ProfileModal';
 
+export const dynamic = "force-dynamic";
 export default async function PotensiAdmin() {
   const potensi: Potensi[] = await prisma.potensi.findMany();
   const totalKategori = [...new Set(potensi.map((p) => p.sektor))].length;

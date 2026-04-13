@@ -7,6 +7,7 @@ import EditPerangkatForm from './EditPerangkatForm';
 import LogoutButton from '@/components/LogoutButton';
 import ProfileModal from '@/components/ProfileModal';
 
+export const dynamic = "force-dynamic";
 export default async function EditPerangkat({ params }: { params: { id: string } }) {
   const perangkat = await prisma.perangkatDesa.findUnique({
     where: { id: Number(params.id) },

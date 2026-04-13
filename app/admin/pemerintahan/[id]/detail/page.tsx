@@ -10,7 +10,7 @@ import HapusButton from '../../HapusButton';
 import LogoutButton from '@/components/LogoutButton';
 import ProfileModal from '@/components/ProfileModal';
 
-
+export const dynamic = "force-dynamic";
 export default async function DetailPemerintahan({ params }: { params: { id: string } }) {
   const pemerintahan = await prisma.pemerintahan.findUnique({
     where: { id: Number(params.id) },

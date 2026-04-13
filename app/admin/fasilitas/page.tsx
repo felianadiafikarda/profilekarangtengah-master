@@ -8,7 +8,7 @@ import TambahModal from './tambah/TambahForm';
 import LogoutButton from '@/components/LogoutButton';
 import ProfileModal from '@/components/ProfileModal';
 
-
+export const dynamic = "force-dynamic";
 export default async function FasilitasAdmin() {
   const fasilitas: Fasilitas[] = await prisma.fasilitas.findMany();
   const totalKategori = [...new Set(fasilitas.map((f) => f.kategori))].length;

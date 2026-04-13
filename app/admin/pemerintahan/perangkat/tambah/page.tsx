@@ -5,6 +5,7 @@ import TambahPerangkatForm from './TambahPerangkatForm';
 import LogoutButton from '@/components/LogoutButton';
 import ProfileModal from '@/components/ProfileModal';
 
+export const dynamic = "force-dynamic";
 export default function TambahPerangkat() {
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">

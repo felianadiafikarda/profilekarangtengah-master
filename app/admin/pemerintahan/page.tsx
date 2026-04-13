@@ -8,7 +8,7 @@ import Link from 'next/link';
 import LogoutButton from '@/components/LogoutButton';
 import ProfileModal from '@/components/ProfileModal';
 
-
+export const dynamic = "force-dynamic";
 export default async function AdminPemerintahan() {
   const pemerintahan = await prisma.pemerintahan.findFirst();
   const perangkat = await prisma.perangkatDesa.findMany({

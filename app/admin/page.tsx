@@ -8,7 +8,7 @@ import Link from 'next/link';
 import LogoutButton from '@/components/LogoutButton';
 import ProfileModal from '@/components/ProfileModal';
 
-
+export const dynamic = "force-dynamic";
 export default async function AdminDashboard() {
   const beranda = await prisma.beranda.findFirst();
 
