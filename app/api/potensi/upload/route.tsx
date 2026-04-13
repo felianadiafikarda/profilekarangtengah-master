@@ -1,37 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
-import fs from "fs";
+import { put } from "@vercel/blob"; // Ganti fs & path dengan ini
 import prisma from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
-// Utility untuk menyimpan file
-async function saveFile(file: File, folder: string) {
-  const dir = path.join(process.cwd(), "public", folder);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+// Utility untuk menyimpan file ke Vercel Blob
+async function saveFile(file: File) {
+  // Langsung upload ke cloud, Vercel otomatis menangani penamaan unik
+  const blob = await put(file.name, file, {
+    access: "public",
+  });
 
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  const fileName = `${Date.now()}-${file.name}`;
-  const filePath = path.join(dir, fileName);
-
-  fs.writeFileSync(filePath, buffer);
-
-  return `/${folder}/${fileName}`;
+  return blob.url; // Mengembalikan link https://...
 }
 
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
 
-    const sektor        = formData.get("sektor")?.toString() || "";
-    const judulGambar   = formData.get("judulGambar")?.toString() || "";
-    const komoditas     = formData.get("komoditas")?.toString() || "";
+    const sektor          = formData.get("sektor")?.toString() || "";
+    const judulGambar     = formData.get("judulGambar")?.toString() || "";
+    const komoditas       = formData.get("komoditas")?.toString() || "";
     const deskripsiGambar = formData.get("deskripsiGambar")?.toString() || "";
     const deskripsiSektor = formData.get("deskripsiSektor")?.toString() || "";
-    const file          = formData.get("file") as File | null;
+    const file            = formData.get("file") as File | null;
 
-    if (!file) return NextResponse.json({ error: "File wajib diupload." }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ error: "File wajib diupload." }, { status: 400 });
+    }
 
-    const imageUrl = await saveFile(file, "uploads/potensi");
+    // Panggil utility saveFile yang baru
+    const imageUrl = await saveFile(file);
 
     const potensi = await prisma.potensi.create({
       data: {
@@ -44,9 +42,13 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Update cache agar data masuk ke halaman user
+    revalidatePath("/potensi");
+    revalidatePath("/admin/potensi");
+
     return NextResponse.json({ message: "Berhasil menambahkan potensi.", potensi });
   } catch (err: any) {
-    console.error(err);
+    console.error("Tambah Potensi Error:", err);
     return NextResponse.json({ error: err.message || "Terjadi kesalahan server." }, { status: 500 });
   }
 }

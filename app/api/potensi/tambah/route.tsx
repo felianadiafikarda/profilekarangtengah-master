@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import fs from "fs";
-import path from "path";
+import { put } from "@vercel/blob"; // Tambahkan ini
+import { revalidatePath } from "next/cache";
 
 export async function POST(req: Request) {
   try {
@@ -17,28 +17,18 @@ export async function POST(req: Request) {
 
     let imagePath = "";
 
-    // jika ada file gambar
+    // Jika ada file gambar, upload ke Vercel Blob
     if (file && file.size > 0) {
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+      // Langsung upload tanpa perlu mkdir atau buffer manual
+      const blob = await put(file.name, file, {
+        access: "public",
+      });
 
-      const fileName =
-        Date.now() + "-" + file.name.replaceAll(" ", "_");
-
-      const uploadDir = path.join(process.cwd(), "public/uploads");
-
-      // buat folder jika belum ada
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-
-      const filePath = path.join(uploadDir, fileName);
-
-      fs.writeFileSync(filePath, buffer);
-
-      imagePath = "/uploads/" + fileName;
+      // Ambil link URL dari Vercel Blob
+      imagePath = blob.url;
     }
 
+    // Simpan ke database Neon melalui Prisma
     await prisma.potensi.create({
       data: {
         sektor,
@@ -46,14 +36,18 @@ export async function POST(req: Request) {
         komoditas,
         deskripsiGambar,
         deskripsiSektor,
-        image: imagePath
+        image: imagePath // Sekarang berisi link https://...
       }
     });
+
+    // Paksa web untuk refresh data terbaru
+    revalidatePath("/potensi");
+    revalidatePath("/admin/potensi");
 
     return NextResponse.json({ success: true });
 
   } catch (error) {
-    console.error(error);
+    console.error("Tambah Potensi error:", error);
 
     return NextResponse.json(
       { error: "Gagal upload potensi" },

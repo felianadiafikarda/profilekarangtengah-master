@@ -1,9 +1,5 @@
-// app/api/fasilitas/edit/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { existsSync } from "fs";
-import path from "path";
-import { randomUUID } from "crypto";
+import { put } from "@vercel/blob"; 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
@@ -16,29 +12,27 @@ export async function POST(req: NextRequest) {
     const file          = formData.get("file") as File | null;
     let   image         = formData.get("existingImage") as string;
 
-    // Kalau ada file baru, simpan langsung di sini
+    // Jika ada file baru yang diunggah
     if (file && file.size > 0) {
-      const bytes  = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+      // Langsung upload ke Vercel Blob
+      const blob = await put(file.name, file, {
+        access: "public",
+      });
 
-      const ext      = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-      const fileName = `${randomUUID()}.${ext}`;
-
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-      if (!existsSync(uploadDir)) {
-        await mkdir(uploadDir, { recursive: true });
-      }
-
-      await writeFile(path.join(uploadDir, fileName), buffer);
-      image = `/uploads/${fileName}`;
+      // Ambil URL permanen dari Vercel Blob (https://...)
+      image = blob.url;
     }
 
+    // Update database Neon lewat Prisma
     await prisma.fasilitas.update({
       where: { id },
       data: { namaFasilitas, kategori, image },
     });
 
+    // Bersihkan cache agar perubahan langsung muncul di web
     revalidatePath("/admin/fasilitas");
+    revalidatePath("/fasilitas"); 
+
     return NextResponse.json({ success: true });
 
   } catch (err) {

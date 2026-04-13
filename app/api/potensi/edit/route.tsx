@@ -1,8 +1,7 @@
-//app/api/potensi/edit/route.tsx
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { put } from "@vercel/blob"; // Pengganti fs dan path
+import { revalidatePath } from "next/cache";
 
 export async function POST(req: Request) {
   try {
@@ -18,19 +17,20 @@ export async function POST(req: Request) {
 
     let image = existingImage;
 
-    // Cek file baru
+    // Cek apakah ada file baru yang diunggah
     const file = formData.get("file") as File | null;
     if (file && file.size > 0) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const fileName = `${Date.now()}-${file.name}`;
-      const filePath = path.join(process.cwd(), "public", "uploads", "potensi", fileName);
+      // 1. Upload langsung ke Vercel Blob
+      // Kita tidak perlu buat buffer manual atau mkdirSync lagi
+      const blob = await put(file.name, file, {
+        access: "public",
+      });
 
-      fs.mkdirSync(path.dirname(filePath), { recursive: true });
-      fs.writeFileSync(filePath, buffer);
-
-      image = `/uploads/potensi/${fileName}`;
+      // 2. Gunakan URL hasil upload dari Blob
+      image = blob.url;
     }
 
+    // 3. Update data di database Neon lewat Prisma
     await prisma.potensi.update({
       where: { id },
       data: {
@@ -39,14 +39,18 @@ export async function POST(req: Request) {
         komoditas,
         deskripsiGambar,
         deskripsiSektor,
-        image
+        image // Sekarang berisi link https://...
       }
     });
+
+    // 4. Tambahkan revalidatePath agar perubahan langsung terlihat di web
+    revalidatePath("/potensi");
+    revalidatePath("/admin/potensi");
 
     return NextResponse.json({ success: true });
 
   } catch (error) {
-    console.error(error);
+    console.error("Potensi edit error:", error);
     return NextResponse.json(
       { error: "Gagal update potensi" },
       { status: 500 }
