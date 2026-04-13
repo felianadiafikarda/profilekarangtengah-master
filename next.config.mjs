@@ -1,7 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // 1. Wajib untuk GitHub Pages agar menghasilkan folder 'out'
-  output: 'export',
   eslint: {
     ignoreDuringBuilds: true, // Tambahkan ini jika build gagal terus karena linting
   },
