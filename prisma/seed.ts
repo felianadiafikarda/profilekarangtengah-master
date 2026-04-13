@@ -1,18 +1,48 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
+  // ---------------------------------------------------------
+  // 1. PEMBERSIHAN DATA LAMA
+  // ---------------------------------------------------------
+  await prisma.user.deleteMany();
+  console.log("Data user lama berhasil dihapus");
+  
+  await prisma.beranda.deleteMany();
+  console.log("Data beranda lama berhasil dihapus");
 
   await prisma.fasilitas.deleteMany();
   console.log("Data fasilitas lama berhasil dihapus");
+  
   await prisma.potensi.deleteMany();
   console.log("Data potensi lama berhasil dihapus");
+  
   await prisma.pemerintahan.deleteMany();
   console.log("Data pemerintahan lama berhasil dihapus");
+  
   await prisma.perangkatDesa.deleteMany();
   console.log("Data perangkat desa lama berhasil dihapus");
 
+  // ---------------------------------------------------------
+  // 2. SEED DATA USER (AKUN ADMIN)
+  // ---------------------------------------------------------
+  const hashedPassword = await bcrypt.hash("admin123", 10);
+  
+  await prisma.user.create({
+    data: {
+      username: "admin",
+      password: hashedPassword,
+      name: "Admin Karangtengah",
+      role: "admin",
+    },
+  });
+  console.log("Akun admin pertama berhasil dibuat (User: admin, Pass: admin123) ✅");
+
+  // ---------------------------------------------------------
+  // 3. SEED DATA BERANDA
+  // ---------------------------------------------------------
   await prisma.beranda.create({
     data: {
       namaKepala: "Sarwanto",
@@ -72,7 +102,11 @@ async function main() {
         "WPQ4+RP2, Karangtengah, RT.1/RW.5, Dadapayu, Semanu, Gunungkidul, Yogyakarta 55123",
     },
   });
+  console.log("Data beranda berhasil ditambahkan");
 
+  // ---------------------------------------------------------
+  // 4. SEED DATA FASILITAS
+  // ---------------------------------------------------------
   await prisma.fasilitas.createMany({
     data: [
       {
@@ -97,13 +131,15 @@ async function main() {
         kategori: "Umum & Administrasi",
         namaFasilitas: "Balai Padukuhan Karangtengah",
         image: "/fasilitas/balai-padukuhan.jpg",
-        mapLink:
-          "https://www.google.com/maps/place/BALAI+PADUKUHAN+KARANG+TENGAH",
+        mapLink: "https://www.google.com/maps/place/BALAI+PADUKUHAN+KARANG+TENGAH",
       },
     ],
   });
   console.log("Data fasilitas berhasil ditambahkan");
- 
+
+  // ---------------------------------------------------------
+  // 5. SEED DATA POTENSI
+  // ---------------------------------------------------------
   await prisma.potensi.createMany({
     data: [
       {
@@ -116,8 +152,6 @@ async function main() {
           "Dari segi potensi wilayah, Padukuhan Karangtengah memiliki sektor pertanian sebagai potensi utama. Sebagian besar wilayahnya berupa lahan persawahan, hutan, dan perkebunan yang menjadi sumber utama mata pencaharian masyarakat.",
         komoditas: "Padi,Kedelai,Kacang Tanah,Jagung,Ketela",
       },
-
-      
       {
         sektor: "Potensi Peternakan",
         image: "/potensi/peternakan.jpg",
@@ -128,8 +162,6 @@ async function main() {
           "Selain pertanian, sektor peternakan juga berkembang cukup baik. Masyarakat setempat banyak yang beternak sapi, kambing, ayam, dan ternak lainnya sebagai upaya meningkatkan perekonomian keluarga.",
         komoditas: "Sapi,Kambing,Ayam,Bebek",
       },
-
-      
       {
         sektor: "Potensi Budaya",
         image: "/potensi/budaya.jpg",
@@ -140,11 +172,13 @@ async function main() {
           "Tidak hanya memiliki potensi ekonomi, Padukuhan Karangtengah juga kaya akan potensi budaya. Kesenian tradisional masih dilestarikan oleh masyarakat sebagai bagian dari identitas dan warisan budaya lokal.",
         komoditas: "Karawitan,Ketoprak,Jathilan",
       },
-
     ],
   });
   console.log("Data potensi berhasil ditambahkan");
 
+  // ---------------------------------------------------------
+  // 6. SEED DATA PEMERINTAAN
+  // ---------------------------------------------------------
   await prisma.pemerintahan.create({
     data: {
       judul: "Pemerintahan Padukuhan Karangtengah",
@@ -164,7 +198,9 @@ Potensi utama Karangtengah berada pada sektor pertanian dengan komoditas padi, j
   });
   console.log("Data pemerintahan berhasil ditambahkan");
 
-  // Data Perangkat Desa
+  // ---------------------------------------------------------
+  // 7. SEED DATA PERANGKAT DESA
+  // ---------------------------------------------------------
   await prisma.perangkatDesa.createMany({
     data: [
       { nama: "Sarwanto", jabatan: "KEPALA PADUKUHAN" },
@@ -191,6 +227,7 @@ Potensi utama Karangtengah berada pada sektor pertanian dengan komoditas padi, j
 main()
   .catch((e) => {
     console.error(e);
+    process.exit(1);
   })
   .finally(async () => {
     await prisma.$disconnect();
