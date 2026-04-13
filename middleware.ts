@@ -36,6 +36,6 @@ export const config = {
     '/admin/:path*', 
     '/login',
     // Hindari menjalankan middleware pada file internal
-    '/((?!api|_next/static|_next/image|favicon.ico|user).*)'
+    '/((?!api|_next/static|_next/image|user|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'
   ],
 };
