@@ -3,7 +3,7 @@ import HeroSection from '@/app/user/components/HeroSection';
 import VideoSection from '@/app/user/components/VideoSection';
 import prisma from '@/lib/prisma';
 import { MapPin, CheckCircle, Leaf, Target, Heart, Users } from 'lucide-react';
-
+export const revalidate = 0;
 // ── Ekstrak embed URL dari string yang mungkin berisi <iframe> HTML ──────────
 function getEmbedUrl(raw: string | null | undefined): string {
   if (!raw) return '';

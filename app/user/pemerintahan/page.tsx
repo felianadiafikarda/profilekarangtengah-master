@@ -1,7 +1,7 @@
 //app/user/pemerintahan/page/tsx
 import prisma from "@/lib/prisma";
 import { Users, Target, History } from "lucide-react";
-
+export const revalidate = 0;
 export default async function Pemerintahan() {
 
   const pemerintahan = await prisma.pemerintahan.findFirst();

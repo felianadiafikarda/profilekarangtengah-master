@@ -3,6 +3,7 @@ import Image from "next/image";
 import prisma from "@/lib/prisma";
 import { TrendingUp } from "lucide-react";
 import { Potensi } from "@prisma/client";
+export const revalidate = 0;
 export default async function PotensiDesa() {
 
   const data = await prisma.potensi.findMany({

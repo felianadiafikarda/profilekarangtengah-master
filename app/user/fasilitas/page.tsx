@@ -4,7 +4,7 @@ import { Fasilitas as FasilitasType } from "@prisma/client";
 import { Building2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
+export const revalidate = 0;
 export default async function Fasilitas() {
 
   const fasilitasData: FasilitasType[] = await prisma.fasilitas.findMany();
