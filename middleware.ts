@@ -29,12 +29,7 @@ export default withAuth(
 );
 
 export const config = {
-  /*
-   * Menggunakan satu baris regex yang mengecualikan:
-   * api, _next/static, _next/image, folder user, 
-   * dan semua file dengan ekstensi gambar/icon.
-   */
-  matcher: [
-    '/((?!api|_next/static|_next/image|user|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  // Kita coba sebutkan satu-satu apa yang mau di-PROTEKSI saja
+  // Daripada menyebutkan apa yang mau di-KECUALIKAN
+  matcher: ["/admin/:path*", "/login"], 
 };
