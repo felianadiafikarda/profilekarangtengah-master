@@ -96,7 +96,7 @@ async function main() {
       ]),
 
       mapLink:
-        "https://maps.app.goo.gl/7p68kw6eDwfBUHat8",
+        "https://www.google.com/maps/embed?pb=!1m18!1m12!...",
 
       alamat:
         "WPQ4+RP2, Karangtengah, RT.1/RW.5, Dadapayu, Semanu, Gunungkidul, Yogyakarta 55123",
